@@ -262,8 +262,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){ // Processing POST requestes
             $toloadcache = $DB->get_records('local_asistencia_permanente', ['course_id'=>$courseid]);
             // $toloadcache = local_asistencia_external::query("SELECT * FROM \"$dbschema\".\"$dbtablename\" WHERE \"COURSE_ID\" = :COURSE_ID", ["COURSE_ID" => $courseid]);
         }
-        $DB->delete_records('local_asistencia', ['courseid' => $courseid]);
-        redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
+       // $DB->delete_records('local_asistencia', ['courseid' => $courseid]);
+     //   redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
     }
 }
 $pageurl = $attendancepage-1??0;
