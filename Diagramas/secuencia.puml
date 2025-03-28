@@ -1,0 +1,50 @@
+@startuml "Secuencia Sistema de Asistencia"
+
+actor Usuario
+participant "local_asistencia_external" as External
+participant "fetch_students" as Students
+participant "fetch_activities" as Activities
+participant "foreing_db_connection" as DB
+participant "report_donwloader" as Report
+database "local_asistencia" as Table
+
+== Consulta de Estudiantes ==
+Usuario -> External: fetch_students(contextid, courseid, roleid)
+activate External
+External -> Students: fetch_students()
+activate Students
+Students -> DB: query()
+activate DB
+DB --> Students: datos estudiantes
+deactivate DB
+Students --> External: array estudiantes
+deactivate Students
+External --> Usuario: lista de estudiantes
+
+== Registro de Asistencia ==
+Usuario -> External: edit()
+activate External
+External -> Table: guardar asistencia
+activate Table
+Table --> External: confirmación
+deactivate Table
+External --> Usuario: confirmación guardado
+
+== Generación de Reporte ==
+Usuario -> External: fetch_attendance_report()
+activate External
+External -> Activities: fetch_attendance_report()
+activate Activities
+Activities -> DB: query()
+activate DB
+DB --> Activities: datos asistencia
+deactivate DB
+Activities --> External: datos procesados
+External -> Report: attendance_report()
+activate Report
+Report --> External: reporte generado
+deactivate Report
+External --> Usuario: reporte final
+deactivate External
+
+@enduml

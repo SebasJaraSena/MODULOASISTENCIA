@@ -1,0 +1,114 @@
+.container {
+    padding-left: 0%;
+}
+.fortable {
+    border: 0.1rem solid #39a900;
+}
+
+.table-container {
+    overflow-x: auto;
+    width: auto;
+    position: relative;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+    width:70%;
+}
+
+
+.sticky-column {
+    position: sticky;
+    left: 0;
+    background-color: #f1f1f1;
+    z-index: 1;
+}
+
+.input-class {
+    display: none;
+}
+
+.my-button {
+    position: sticky;
+    left: 0;
+}
+
+.input-container {
+    display: none;
+    
+}
+
+.extra-input {
+    width: 4rem;
+}
+.attendance-row{
+    flex-flow: row-reverse;
+}
+
+.new-modal {
+    background-color: #00000088;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1;
+}
+
+.new-modal:target {
+    display: block;
+}
+
+.floating-card {
+    float: none;
+    margin: 5px;
+    max-width: 400px;
+    z-index: 1;
+
+}
+
+.column-table {
+    width: 500 px;
+}
+
+.button-container {
+    display: grid;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .btn-custom {
+    width: 220px; /* Ancho fijo para todos */
+    height: 60px; /* Altura fija para uniformidad */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #28a745; /* Verde, puedes cambiarlo */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .btn-custom:hover {
+    background-color: #218838;
+  }

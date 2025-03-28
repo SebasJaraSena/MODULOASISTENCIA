@@ -1,0 +1,101 @@
+@startuml "Arquitectura del Sistema de Asistencia"
+
+!define RECTANGLE class
+
+' Definición de estilos
+skinparam {
+    BackgroundColor white
+    ComponentStyle uml2
+    PackageStyle rectangle
+    ArrowColor black
+    ComponentBackgroundColor #f0f0f0
+    DatabaseBackgroundColor #e0e0e0
+}
+
+' Componentes principales del sistema
+package "Frontend" {
+    [Interfaz de Usuario] as UI
+    [Templates Mustache] as Templates
+    [JavaScript (AMD)] as JS
+}
+
+package "Backend" {
+    [Controladores] as Controllers
+    [Servicios] as Services
+    [Modelos] as Models
+    [API Externa] as ExternalAPI
+}
+
+package "Core" {
+    [Sistema de Caché] as Cache
+    [Gestor de Sesiones] as Sessions
+    [Validador] as Validator
+    [Sistema de Logging] as Logger
+}
+
+database "Base de Datos" {
+    [local_asistencia] as DB1
+    [local_asistencia_permanente] as DB2
+    [Tablas Moodle] as MoodleDB
+}
+
+' Interfaces y componentes externos
+interface "HTTP/HTTPS" as HTTP
+interface "API Moodle" as MoodleAPI
+
+' Relaciones y flujo de datos
+UI --> HTTP : requests
+HTTP --> Controllers : procesa
+Controllers --> Services : usa
+Services --> Models : manipula
+Models --> DB1 : CRUD
+Models --> DB2 : CRUD
+Models --> MoodleDB : consulta
+
+Controllers --> Cache : utiliza
+Controllers --> Sessions : gestiona
+Controllers --> Validator : valida
+Controllers --> Logger : registra
+
+Services --> ExternalAPI : integra
+ExternalAPI --> MoodleAPI : consume
+
+Templates --> UI : renderiza
+JS --> UI : interactúa
+JS --> HTTP : AJAX
+
+' Notas explicativas
+note right of UI
+  Interfaces para:
+  - Registro de asistencia
+  - Reportes
+  - Configuración
+end note
+
+note right of Controllers
+  Controladores para:
+  - Asistencia
+  - Reportes
+  - Administración
+end note
+
+note right of Services
+  Servicios de:
+  - Gestión de asistencia
+  - Generación de reportes
+  - Validación de datos
+end note
+
+note right of DB1
+  Almacena:
+  - Registros temporales
+  - Asistencia diaria
+end note
+
+note right of DB2
+  Almacena:
+  - Historial permanente
+  - Datos consolidados
+end note
+
+@enduml 

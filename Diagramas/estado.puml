@@ -1,0 +1,63 @@
+@startuml Estado de Asistencia
+
+skinparam StateBackgroundColor #lightblue
+skinparam StateBorderColor #blue
+skinparam ArrowColor #0033CC
+skinparam StateFontStyle bold
+
+title Estado de Asistencia - Sistema de Control de Asistencia
+
+state "Pendiente" as Pendiente #lightyellow
+state "Registrado" as Registrado
+state "Validado" as Validado
+state "Cerrado" as Cerrado #pink
+state "Retardado" as Retardado #orange
+
+[*] --> Pendiente : Inicio del día
+
+Pendiente --> Registrado : Registro por instructor
+Pendiente --> Retardado : Pasado tiempo límite
+Retardado --> Registrado : Registro con justificación
+Registrado --> Validado : Verificación automática / manual
+Validado --> Cerrado : Fin del período académico
+Validado --> Registrado : Corrección de información
+
+note right of Pendiente
+  Estado inicial donde no se ha
+  registrado asistencia aún
+end note
+
+note right of Registrado
+  La asistencia ha sido marcada
+  pero aún puede ser modificada
+end note
+
+note right of Validado
+  La información ha sido verificada
+  y confirmada oficialmente
+end note
+
+note right of Cerrado
+  Estado final donde ya no se permite
+  modificar la información
+end note
+
+note right of Retardado
+  Estado donde el tiempo de registro
+  normal ha expirado pero se permite
+  registro con justificación
+end note
+
+state Registrado {
+  state "Presente" as Presente
+  state "Ausente" as Ausente
+  state "Excusado" as Excusado
+  
+  [*] --> Presente
+  Presente --> Ausente : Cambio de estado
+  Ausente --> Presente : Cambio de estado
+  Presente --> Excusado : Con justificación
+  Ausente --> Excusado : Con justificación
+}
+
+@enduml 

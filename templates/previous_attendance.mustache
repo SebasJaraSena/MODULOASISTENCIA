@@ -1,0 +1,230 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_asistencia/manage
+
+
+    Example context (json):
+    {
+       
+    }
+}}
+
+
+<h1 class="h1 display-1 text-primary" >Lista de aprendices</h1>
+<div class="container ">
+   <div class="row attendance-row">
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/index.php?courseid={{courseid}}&page=1&info=i'">Asistencia de hoy</button>
+        </div>
+        <div class="col-md-auto">
+            <form action="./previous_attendance.php?courseid={{courseid}}&page={{currentpage}}&info=h&range={{range}}" method="POST">
+                
+                <select class="custom-select" id="weekselect" name="numweeks">
+                    <option value="1" {{#1week}}selected{{/1week}}>1 Semana</option>
+                    <option value="2" {{#2week}}selected{{/2week}}>2 Semanas</option>
+                    <option value="3" {{#3week}}selected{{/3week}}>3 Semanas</option>
+                    <option value="4" {{#4week}}selected{{/4week}}>4 Semanas</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Retroceder</button>
+            </form>
+        </div>
+    </div>
+    <br>
+    <div class="row attendance-row">
+        <div class="col-md-auto">
+        <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/course/view.php?id={{courseid}}'">Volver al curso</button>
+        </div>
+        <div class="col-md-auto">
+        <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/history.php?courseid={{courseid}}&page=1&info=h&range=0'">Histórico</button>
+        </div>
+        
+    </div>
+{{#config}}
+    <div class="row">
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-secondary" onclick="location.href='/{{dirroot}}/local/asistencia/activities.php'">Listar actividades</button>
+        </div>
+    </div>
+{{/config}}
+</div>
+<br>
+<form action="./previous_attendance.php?courseid={{courseid}}&range={{range}}&page={{currentpage}}&weeks={{weeks}}" method="POST" id="course_{{courseid}}">
+<div class="container fortable" style="width:auto; overflow-x: auto">
+        <input type="hidden" id="courseid" name="courseid" value="{{courseid}}">
+        <input type="hidden" id="teacher_{{id}}" name="teacherid" value="{{teacherid}}">
+    <table class="table table-hover table-container" id="attendance-table">
+        <tr>
+            <th class="sticky-column">
+                DOCUMENTO
+            </th>
+            <th class="sticky-column">
+                APELLIDOS
+            </th>
+            <th class="sticky-column">
+                NOMBRES
+            </th>
+            <th class="sticky-column">
+                CORREO
+            </th>
+            <th >
+                ESTADO
+            </th>
+           
+            {{#weekheader}}
+                <th>
+                    {{day}}<br>{{date}}
+                </th>
+            {{/weekheader}}
+            
+        </tr>
+        
+        {{#students}}
+            <tr>
+                <td class="sticky-column">
+                    {{username}}
+                </td>
+                <td class="sticky-column">{{lastname}}
+                    <input type="hidden" id="userid_{{id}}" name="userids[]" value="{{id}}">
+                    <input type="hidden" id="statususerid_{{id}}" name="statususerids[]" value="{{status}}">
+                </td>
+
+                <td class="sticky-column">{{firstname}}
+                </td>
+
+                <td class="sticky-column">
+                    {{email}}
+                </td>
+                <td class="{{#status}}alert alert-warning{{/status}}{{^status}}alert alert-success{{/status}}">
+                    {{#status}}SUSPENDIDO{{/status}}
+                    {{^status}}ACTIVO{{/status}}
+                </td>
+                
+                {{#week}}
+                    <td class = "select-container">
+                     {{!-- Aprendiz suspendido--}}
+                    {{#status}}
+                    
+                        {{^edit}}
+                            <input type="hidden" name="date[]" value="{{fulldate}}">
+                            <input type="hidden" name="attendance[]" value="-1">
+                            <input type="hidden" name="extrainfoNum[]" value="0">
+                            <input type="hidden" name="extrainfo[]" value="0">
+                        {{/edit}}
+                            <p>-</p>
+                            
+                    {{/status}}
+
+                       {{!-- Aprendiz activo--}}
+                    {{^status}}
+                        {{#edit}}
+                            <select class="custom-select form-select-h" disabled>
+                                {{#selection}}
+                                    <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                    <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}} >A</option>
+                                    <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}} >I</option>
+                                    <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                    <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                            </select>
+                                {{/selection}}
+                        {{/edit}}
+                        {{^edit}}
+                            
+                                {{#edit}}
+                                    {{^selection}}
+                                        <select name="attendance[]" class="custom-select form-select" {{#closed}}disabled{{/closed}}>
+                                            <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                            <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}} >A</option>
+                                            <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}} >I</option>
+                                            <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                            <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                                        </select>
+                                    <div class="input-container" >
+                                    <input type="number" name="extrainfoNum[]" class="form-control extra-input" placeholder="Horas" min="1" max = "10" value="{{missedhours}}">
+                                
+                                    <div class="input-container" >
+                                        <input type="text" name="extrainfo[]" class="form-control extra-input" placeholder="Observaciones" value="{{observations}}">
+                                    </div>
+                                    {{/selection}}
+                                {{/edit}}
+                                {{#selection}}
+                                <input type="hidden" name="date[]" value="{{fulldate}}">
+                                    <select name="attendance[]" class="custom-select form-select{{#edit}}-d{{/edit}}"     {{#edit}}disabled{{/edit}} {{#closed}}disabled{{/closed}}>
+                                        <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                        <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}} >A</option>
+                                        <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}} >I</option>
+                                        <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                        <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                                    </select>
+                                {{/selection}}
+                            {{^edit}}
+                                <div class="input-container" >
+                                    <input type="number" name="extrainfoNum[]" class="form-control extra-input" placeholder="Horas" min="1" max = "10" value="{{missedhours}}">
+                                
+                                <div class="input-container" >
+                                    
+                                    <textarea name="extrainfo[]" cols="50" class="form-control extra-input" placeholder="Observaciones">{{observations}}</textarea>
+                                </div>
+                            {{/edit}}
+                        {{/edit}}
+                    {{/status}}
+                    </td>
+                {{/week}}
+                    
+            </tr>
+        {{/students}}
+    </table>
+    {{^close}}
+    {{^closed}}
+        <input type="hidden" name="close" value="1">
+        <button type="button" id="saveButton" class="btn btn-primary my-button" onclick = "location.href='#modal1'" {{#close}}disabled{{/close}}>Guardar</button>
+    {{/closed}}
+    {{/close}}
+</div>
+<div>
+    <br>
+    <div class="container">
+    {{#listpages}}
+        {{#current}}
+            <button type="button" class="btn btn-secondary" onclick="location.href='/{{dirroot}}/local/asistencia/previous_attendance.php?courseid={{courseid}}&range={{range}}&page={{page}}&weeks={{weeks}}'" disabled>{{currentpage}}</button>
+        {{/current}}
+        {{^current}}
+        
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/previous_attendance.php?courseid={{courseid}}&range={{range}}&page={{page}}weeks={{weeks}}'" {{active}}>{{page}}</button>
+        
+        {{/current}}
+    {{/listpages}}
+    </div>
+</div>
+
+<div id="modal1" class="new-modal">
+    
+        <div class="card floating-card ">
+            <div class="card-body">
+                <h2 class="card-title">¿Estás seguro de que deseas cerrar la asistencia?</h2>
+                <h3 class="card-subtitle">Al cerrar la asistencia no se podrá modificar los valores diligenciados.</h3>
+                <br>
+                <div class="d-flex justify-content-between">
+                
+                    <button id="confirmAtt" type="button" class="btn btn-primary">Confirmar</button>
+                    <button id="cancelAtt" type="button" class="btn btn-secondary" onclick="location.href=''">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    
+</div>
+</form>

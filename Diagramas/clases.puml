@@ -1,0 +1,129 @@
+@startuml "Sistema de Asistencia"
+
+top to bottom direction
+' Definición de clases principales
+class local_asistencia_external {
+  + fetch_students(contextid: int, courseid: int, roleid: int, offset: int, limit: int, condition: string): array
+  + edit(): void
+  + query(query: string, params: array): array
+  + fetch_attendance_report(attendancehistory: array, initialdate: string, finaldate: string, cumulous: int, userid: int): array
+  + fetch_attendance_report_detailed(attendancehistory: array, initialdate: string, finaldate: string, cumulous: int, userid: int): array
+  + fetch_activities_report(): array
+  + attendance_report(data: array, initaldate: string, finaldate: string, shortname: string): void
+  + attendance_detailed_report(filename: string, arraydata: array, dataformat: string, userName: string, shortname: string, initialdate: string, finaldate: string): void
+  + close_validation(courseid: int): int
+  + close_validation_retard(courseid: int, initial: string, final: string): int
+  + activityReport(filename: string, userid: int): void
+} 
+
+class fetch_students {
+  - $externaldb: PDO
+  + fetch_students(contextid: int, courseid: int, roleid: int, offset: int, limit: int, conditions: string): array
+  + fetch_user_enrolments(enrolid: int): array
+  + fetch_user_roles(querystring: string, roleid: int, contextid: int): array
+  + user_query_string(array: array): string
+  + into_array_values(array: array): array
+  + close_validation(courseid: int): int
+  + close_validation_retard(courseid: int, initial: string, final: string): int
+}
+
+class fetch_activities {
+  + fetch_attendance_report(attendancehistory: array, initialdate: string, finaldate: string, cumulous: int, userid: int): array
+  + fetch_attendance_report_detailed(attendancehistory: array, initialdate: string, finaldate: string, cumulous: int, userid: int): array
+  + fetch_activities_report(): array
+}
+
+class foreing_db_connection {
+  - $externaldb: PDO
+  + __construct(): void
+  + query(query: string, params: array): array
+}
+
+class edit {
+  + definition(): void
+  + filters(courseid: int): void
+  + dbConfiguration(): void
+  + validation(data: array, files: array): array
+}
+
+class report_donwloader {
+  + attendance_report(result: array, initialdate: string, finaldate: string, shortname: string): void
+  + attendance_report_csv(result: array, initialdate: string, finaldate: string, shortname: string): void
+}
+
+class detailed_report_donwloader {
+  + generate_report_pdf(filename: string, arraydata: array, dataformat: string, userName: string, shortname: string, initialdate: string, finaldate: string): void
+  - headersDays(array: array, days: array): array
+  + activityReport(filename: string, userid: int): void
+}
+
+' Definición de tablas de base de datos
+class local_asistencia << (T,#FF7700) Table >> {
+  + id: int <<PK>>
+  + courseid: int
+  + studentid: int
+  + teacherid: int
+  + attendance: text
+  + date: text
+  + observations: text
+  + amounthours: int
+}
+
+class local_asistencia_config << (T,#FF7700) Table >> {
+  + id: int <<PK>>
+  + name: text
+  + value: text
+}
+
+class local_asistencia_logs << (T,#FF7700) Table >> {
+  + id: int <<PK>>
+  + code: text
+  + message: text
+  + date: text
+  + userid: int
+}
+
+class local_asistencia_permanente << (T,#FF7700) Table >> {
+  + id: int <<PK>>
+  + course_id: int
+  + student_id: int
+  + full_attendance: text
+}
+
+' Herencia
+moodleform <|-- edit
+dataformat <|-- detailed_report_donwloader
+
+' Relaciones
+local_asistencia_external ..> fetch_students : uses
+local_asistencia_external ..> fetch_activities : uses
+local_asistencia_external ..> foreing_db_connection : uses
+local_asistencia_external ..> edit : uses
+local_asistencia_external ..> report_donwloader : uses
+local_asistencia_external ..> detailed_report_donwloader : uses
+
+fetch_students --> local_asistencia : accesses
+fetch_students --> local_asistencia_permanente : accesses
+fetch_activities --> local_asistencia_permanente : accesses
+fetch_activities --> local_asistencia_logs : accesses
+foreing_db_connection --> local_asistencia_config : uses config from
+report_donwloader --> local_asistencia_logs : logs activity
+detailed_report_donwloader --> local_asistencia_logs : logs activity
+
+' Dependencias adicionales
+note right of local_asistencia_external
+  Clase fachada que encapsula
+  todas las operaciones del sistema
+end note
+
+note bottom of foreing_db_connection
+  Gestiona conexión a base de datos externa
+  utilizando PDO de PHP
+end note
+
+note bottom of local_asistencia_permanente
+  Almacena historial completo de asistencia
+  en formato JSON en full_attendance
+end note
+
+@enduml

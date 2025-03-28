@@ -1,0 +1,70 @@
+@startuml "Casos de Uso - Sistema de Asistencia"
+
+top to bottom direction
+
+' Definición de actores
+actor "Instructor" as teacher
+actor "Administrador" as admin
+actor "Sistema" as system
+
+' Rectángulo para agrupar los casos de uso
+rectangle "Sistema de Asistencia" {
+  ' Casos de uso principales
+  usecase "Registrar Asistencia" as UC1
+  usecase "Consultar Estudiantes" as UC2
+  usecase "Generar Reporte de Asistencia" as UC3
+  usecase "Generar Reporte Detallado" as UC4
+  usecase "Validar Cierre de Asistencia" as UC5
+  usecase "Gestionar Configuración" as UC6
+  usecase "Ver Historial de Actividades" as UC7
+  usecase "Exportar Reporte CSV" as UC8
+  usecase "Exportar Reporte PDF" as UC9
+  usecase "Registrar Observaciones" as UC10
+
+  ' Casos de uso extendidos
+  usecase "Validar Retardos" as UC11
+  usecase "Consultar Logs" as UC12
+}
+
+' Relaciones con los actores
+teacher --> UC1
+teacher --> UC2
+teacher --> UC3
+teacher --> UC4
+teacher --> UC10
+
+admin --> UC6
+admin --> UC12
+admin --> UC5
+
+system --> UC11
+system --> UC7
+
+' Relaciones entre casos de uso
+UC3 <.. UC8 : <<extend>>
+UC3 <.. UC9 : <<extend>>
+UC1 <.. UC10 : <<extend>>
+UC5 <.. UC11 : <<extend>>
+
+' Notas explicativas
+note right of UC1
+  Incluye registro de:
+  - Asistencia
+  - Fecha y hora
+  - Cantidad de horas
+end note
+
+note right of UC3
+  Permite generar reportes:
+  - Por período
+  - Por estudiante
+  - Por curso
+end note
+
+note bottom of UC6
+  Configuración de:
+  - Parámetros del sistema
+  - Conexión a BD externa
+end note
+
+@enduml

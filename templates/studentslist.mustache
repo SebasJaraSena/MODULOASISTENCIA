@@ -1,0 +1,215 @@
+
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_asistencia/manage
+
+
+    Example context (json):
+    {
+       
+    }
+}}
+
+
+
+<div class="container justify-content-end">
+    <div class="row attendance-row">
+        <div class="col-md-auto">
+        <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/index.php?courseid={{courseid}}'">Regresar al menu</button>
+        </div>
+    </div>
+</div>
+<br>
+<form action="./attendance.php?courseid={{courseid}}&range={{range}}&page={{currentpage}}" method="POST" id="course_{{courseid}}">
+<div class="container" style="display: flex; align-items: center; gap: 10px;">
+    <h1 style="margin: 0;">Buscar:</h1>
+    <input type="text" id="searchInput" class="form-control" placeholder="Buscar por documento, apellidos, nombres o correo">
+</div>
+
+<br>
+
+<div class="container fortable" style="width:auto; overflow-x: auto">
+    <input type="hidden" id="courseid" name="courseid" value="{{courseid}}">
+    <input type="hidden" id="teacher_{{id}}" name="teacherid" value="{{teacherid}}">
+
+    <table class="table table-hover table-container" id="attendance-table">
+        <thead>
+            <tr>
+                <th class="">DOCUMENTO</th>
+                <th class="">APELLIDOS</th>
+                <th class="">NOMBRES</th>
+                <th class="">CORREO</th>
+                <th class="">ESTADO</th>
+                {{#weekheader}}
+                    <th class="column-table">{{day}}<br>{{date}}</th>
+                {{/weekheader}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#students}}
+                <tr>
+                    <td class="sticky-column">{{username}}</td>
+                    <td class="sticky-column">
+                        {{lastname}}
+                        <input type="hidden" id="userid_{{id}}" name="userids[]" value="{{id}}">
+                        <input type="hidden" id="statususerid_{{id}}" name="statususerids[]" value="{{status}}">
+                    </td>
+                    <td class="sticky-column">{{firstname}}</td>
+                    <td class="sticky-column">{{email}}</td>
+                    <td class="sticky-column {{#status}}alert alert-warning{{/status}}{{^status}}alert alert-success{{/status}}">
+                        {{#status}}SUSPENDIDO{{/status}}
+                        {{^status}}ACTIVO{{/status}}
+                    </td>
+                    {{#week}}
+                        <td class="select-container column-table">
+                            {{#status}}
+                            
+                            {{!-- Aprendiz suspendido--}}
+                                {{^current}}
+                                    <input type="hidden" name="attendance[]" value="-1">
+                                {{/current}}
+                                
+                                    <select class="custom-select form-select-h" disabled>
+                                        <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                        <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}}>A</option>
+                                        <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}}>I</option>
+                                        <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                        <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                                    </select>
+                                
+                            {{/status}}
+                            
+                            {{!--*******************************--}}
+                            {{!-- Aprendiz activo--}}
+                            {{^status}}
+                                {{#closed}}  {{!--  closed es verdadero--}}
+                                    <select class="custom-select form-select-h" >
+                                        {{#selection}}
+                                            <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                            <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}}>A</option>
+                                            <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}}>I</option>
+                                            <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                            <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                                        {{/selection}}
+                                    </select>
+                                {{/closed}}
+                                {{^closed}}
+                                    {{#current}}
+                                        {{^selection}}
+                                        <select name="attendance[]" class="custom-select form-select" {{#closed}}disabled{{/closed}}>
+                                            <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                            <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}} >A</option>
+                                            <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}} >I</option>
+                                            <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                            <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                                        </select>
+                                    <div class="input-container">
+                                            <input type="number" name="extrainfoNum[]" class="form-control extra-input" placeholder="Horas" min="1" max="10" value="{{missedhours}}">
+                                            <textarea name="extrainfo[]" class="form-control extra-input" placeholder="Observaciones" style="width: 100%; height: 40px; resize: horizontal;">{{observations}}</textarea>
+                                        </div>
+                                    {{/selection}}
+                                    {{/current}}
+                                    {{#selection}}
+                                        <select name="attendance[]" class="custom-select form-select">
+                                            <option value="-8" title="-" {{#op-8}}selected{{/op-8}}>-</option>
+                                            <option value="1" title="{{asistio}}" {{#op1}}selected{{/op1}}>A</option>
+                                            <option value="0" title="{{inasistencia}}" {{#op0}}selected{{/op0}}>I</option>
+                                            <option value="2" title="{{retraso}}" {{#op2}}selected{{/op2}}>R</option>
+                                            <option value="3" title="{{excusa}}" {{#op3}}selected{{/op3}}>EM</option>
+                                        </select>
+                                    {{/selection}}
+                                    {{^current}}
+                                        <div class="input-container">
+                                            <input type="number" name="extrainfoNum[]" class="form-control extra-input" placeholder="Horas" min="1" max="10" value="{{missedhours}}">
+                                            <textarea name="extrainfo[]" class="form-control extra-input" placeholder="Observaciones" style="width: 100%; height: 40px; resize: horizontal;">{{observations}}</textarea>
+                                        </div>
+                                    {{/current}}
+                                {{/closed}}
+                            {{/status}}
+                            {{!--*******************************--}}
+                        </td>
+                    {{/week}}
+                </tr>
+            {{/students}}
+        </tbody>
+    </table>
+
+    {{^close}}
+        <input type="hidden" name="close" value="1">
+        <button type="button" id="saveButton" class="btn btn-primary my-button" onclick="location.href='#modal1'" {{#close}}disabled{{/close}}>Guardar</button>
+    {{/close}}
+</div>
+<div>
+    <br>
+    <div class="container">
+    {{#listpages}}
+        {{#current}}
+            <button type="button" class="btn btn-secondary" onclick="location.href='/{{dirroot}}/local/asistencia/attendance.php?courseid={{courseid}}&range={{range}}&page={{page}}'" disabled>{{page}}</button>
+        {{/current}}
+        {{^current}}
+        
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/attendance.php?courseid={{courseid}}&range={{range}}&page={{page}}'" {{active}}>{{page}}</button>
+        
+        {{/current}}
+    {{/listpages}}
+    </div>
+</div>
+
+{{^close}}
+<div class="container">
+    <br>
+    
+</div>
+{{/close}}
+
+<div id="modal1" class="new-modal">
+    <div class="card floating-card">
+        <div class="card-body">
+            <h2 class="card-title">¿Estás seguro de que deseas cerrar la asistencia?</h2>
+            <h3 class="card-subtitle">Al cerrar la asistencia no se podrá modificar los valores diligenciados.</h3>
+            <br>
+            <div class="d-flex justify-content-between">
+            
+                <button id="confirmAtt" type="button" class="btn btn-primary">Confirmar</button>
+                <button id="cancelAtt" type="button" class="btn btn-secondary" onclick="location.href=''">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', function() {
+        let filter = searchInput.value.toLowerCase();
+        let table = document.getElementById('attendance-table');
+        let rows = table.querySelectorAll('tbody tr'); // Filtramos solo el cuerpo, no el encabezado
+
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase(); // Captura todo el texto de la fila
+            let matches = text.includes(filter);
+            
+            // Muestra la fila si coincide con el filtro, de lo contrario la oculta completamente
+            row.style.display = matches ? '' : 'none';
+        });
+    });
+});
+</script>
+

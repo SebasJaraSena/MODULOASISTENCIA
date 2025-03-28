@@ -1,0 +1,162 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_asistencia/manage
+
+
+    Example context (json):
+    {
+       
+    }
+}}
+
+<h1 class="h1 display-1 text-primary" >Histórico asistencia</h1>
+<div class="container justify-content-end">
+    <div class="row attendance-row">
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/course/view.php?id={{courseid}}'">Volver al curso</button>
+        </div>
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/index.php?courseid={{courseid}}&page=1&range=0'">Asistencia</button>
+        </div>
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/history.php?courseid={{courseid}}&page={{page}}&info=h&limit={{#limit}}0{{/limit}}{{^limit}}1{{/limit}}'">{{#limit}}Ver listado completo{{/limit}}{{^limit}}Ver páginado{{/limit}}</button>
+        </div>
+    
+    </div>
+    {{#config}}
+    <div class="row">
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-secondary" onclick="location.href='/{{dirroot}}/local/asistencia/activities.php'">Listar actividades</button>
+        </div>
+    </div>
+    <br>
+    {{/config}}
+
+    <div class="row">
+        <div class="col-md-auto">
+            <form action="./history.php?courseid={{courseid}}&page={{currentpage}}&info=h&range={{range}}&limit={{limit}}&initial={{initial}}&final={{final}}" method="POST">
+            
+                <select class="custom-select" id="date-range-select" name="filtro_fecha">
+                    <option value="0" {{#option}}selected{{/option}}>Seleccione una opción</option>
+                    <option value="day" {{#day}}selected{{/day}}>Día</option>
+                    <option value="week" {{#week}}selected{{/week}}>Semana actual</option>
+                    <option value="range_dates" {{#range_dates}}selected{{/range_dates}}>Rango de fechas</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrar fecha</button>
+                <div id="date-inputs-container" class="row-md-9 form-inline align-items-start felement" style="display: none;">
+                    <label for="start-date">Fecha de inicio:</label>
+                    <input class="form-control" type="date" id="start-date" name="start-date" value="{{initial_value}}" max="{{finaldate}}">
+                    <label for="end-date">Fecha de fin:</label>
+                    <input class="form-control" type="date" id="end-date" name="end-date" value="{{final_value}}" min="{{initialdate}}">
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    <div class="row attendance-row">
+        <div class="col-md-auto">
+            <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/history.php?courseid={{courseid}}&page={{page}}&info=h&initial={{initial}}&final={{final}}{{#day}}&day=1{{/day}}{{#week}}&week=1{{/week}}{{#range_dates}}&range_dates=1{{/range_dates}}&range={{#range}}0{{/range}}{{^range}}1{{/range}}'">Mostrar {{^range}}consolidado de{{/range}}{{#range}}mi{{/range}} asistencia {{^range}}por todos los instructores{{/range}}</button>
+        </div>
+        
+    </div>
+</div>
+<br>
+<div class="container fortable" style="width:auto; overflow-x: auto">
+    <table class="table table-hover table-container">
+            <tr>
+                <th class="fixed">
+                    DOCUMENTO
+                </th>
+                <th class="fixed-2">
+                    APELLIDOS
+                </th>
+                <th class="fixed-3">
+                    NOMBRES
+                </th>
+                <th class="fixed-4">
+                    CORREO
+                </th>
+                <th class="fixed-5">
+                    ESTADO
+                </th>
+            
+                {{#monthheader}}
+                    <th>
+                        {{day}}<br>{{date}}
+                    </th>
+                {{/monthheader}}
+                
+            </tr>
+            {{#students}}
+                <tr>
+                    <td class="fixed">
+                        {{username}}
+                    </td>
+                    <td class="fixed-2">
+                        {{lastname}}
+                    </td>
+                    <td class="fixed-3">
+                        {{firstname}}
+                    </td>
+                    <td class="fixed-4">
+                        {{email}}
+                    </td>
+                    <td class="fixed-5">
+                        {{#status}}SUSPENDIDO{{/status}}
+                        {{^status}}ACTIVO{{/status}}
+                    </td>
+                    {{#month}}
+                        <td class="select-container">
+                            {{#current}}
+                                <p>No Info.</p>
+                            {{/current}}
+                            {{^current}}
+                                
+                                    {{#selection}}
+                                        <p>{{op}}</p>
+                                        <p>Horas ausencia {{time}}</p>
+                                    {{/selection}}
+                                
+                            {{/current}}
+                        </td>
+                    {{/month}}
+                </tr>
+            {{/students}}
+    </table>
+</div>
+<div>
+    <br>
+    <div class="container">
+        {{#listpages}}
+            {{#current}}
+                <button type="button" class="btn btn-secondary" disabled>{{page}}</button>
+            {{/current}}
+            {{^current}}
+            
+                <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/history.php?courseid={{courseid}}&page={{page}}&info=h&initial={{initial}}&final={{final}}{{#day}}&day=1{{/day}}{{#week}}&week=1{{/week}}{{#range_dates}}&range_dates=1{{/range_dates}}&range={{range}}'" {{active}}>{{page}}</button>
+            
+            {{/current}}
+        {{/listpages}}
+    </div>
+    <br>
+    <br>
+    <div class="container" >
+        <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/downloader.php?courseid={{courseid}}&cumulous={{range}}&initialdate={{initial_value}}&finaldate={{final_value}}'">Descargar reporte</button>    
+        <button type="button" class="btn btn-primary" onclick="location.href='/{{dirroot}}/local/asistencia/detailed_report_downloader.php?courseid={{courseid}}&cumulous={{range}}&initialdate={{initial_value}}&finaldate={{final_value}}'" id = "detailed_donwloader" title="Habilitado para rangos de 5 días o menos.">Descargar detallado</button>    
+    </div>
+</div>

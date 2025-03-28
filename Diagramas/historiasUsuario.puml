@@ -1,0 +1,70 @@
+@startuml "Historias de Usuario - Sistema de Asistencia"
+
+left to right direction
+' Definición de estilos
+skinparam {
+    BackgroundColor white
+    ArrowColor black
+    ActorBorderColor black
+    UsecaseBorderColor black
+}
+
+' Actores
+actor "Instructor" as instructor
+actor "Administrador" as admin
+
+' Historias de Usuario para Instructor
+rectangle "Historias de Usuario - Instructor" {
+    usecase "HU-01: Como instructor quiero registrar la asistencia\npara llevar control de la participación de los aprendices" as HU01
+    usecase "HU-02: Como instructor quiero consultar estudiantes\npara ver la lista de aprendices matriculados" as HU02
+    usecase "HU-03: Como instructor quiero generar reportes\npara analizar la asistencia por período" as HU03
+    usecase "HU-04: Como instructor quiero registrar observaciones\npara documentar situaciones especiales" as HU04
+    usecase "HU-05: Como instructor quiero ver el historial\npara revisar registros anteriores" as HU05
+    usecase "HU-06: Como instructor quiero exportar reportes\npara tener respaldo en CSV y PDF" as HU06
+}
+
+' Historias de Usuario para Administrador
+rectangle "Historias de Usuario - Administrador" {
+    usecase "HU-07: Como admin quiero gestionar la configuración\npara mantener parámetros del sistema" as HU07
+    usecase "HU-08: Como admin quiero validar cierres de asistencia\npara asegurar el registro completo" as HU08
+    usecase "HU-09: Como admin quiero consultar logs\npara monitorear la actividad del sistema" as HU09
+    usecase "HU-10: Como admin quiero gestionar conexiones\npara integrar con BD externa" as HU10
+}
+
+' Relaciones
+instructor --> HU01
+instructor --> HU02
+instructor --> HU03
+instructor --> HU04
+instructor --> HU05
+instructor --> HU06
+
+admin --> HU07
+admin --> HU08
+admin --> HU09
+admin --> HU10
+
+' Notas explicativas
+note right of HU01
+  Incluye:
+  - Marcar asistencia
+  - Registrar retardos
+  - Registrar excusas médicas
+end note
+
+note right of HU03
+  Tipos de reportes:
+  - Por período
+  - Por estudiante
+  - Por curso
+  - Detallado
+end note
+
+note right of HU07
+  Configuraciones:
+  - Parámetros del sistema
+  - Conexión a BD
+  - Roles y permisos
+end note
+
+@enduml 

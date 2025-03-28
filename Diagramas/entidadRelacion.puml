@@ -1,0 +1,95 @@
+@startuml "Diagrama Entidad Relación - Sistema de Asistencia"
+
+' Configuración del estilo
+!define table(x) class x << (T,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+!define foreign_key(x) #x#
+!define unique(x) "unique: x"
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Entidades principales
+table(Usuario) {
+    primary_key(id): INT
+    --
+    username: VARCHAR
+    firstname: VARCHAR
+    lastname: VARCHAR
+    email: VARCHAR
+    phone1: VARCHAR
+    suspended: BOOLEAN
+}
+
+table(Curso) {
+    primary_key(id): INT
+    --
+    shortname: VARCHAR
+    fullname: VARCHAR
+    category: INT
+    visible: BOOLEAN
+}
+
+table(Asistencia) {
+    primary_key(id): INT
+    --
+    foreign_key(courseid): INT
+    foreign_key(studentid): INT
+    foreign_key(teacherid): INT
+    attendance: TEXT
+    date: DATE
+    observations: TEXT
+    amounthours: INT
+}
+
+table(AsistenciaPermanente) {
+    primary_key(id): INT
+    --
+    foreign_key(course_id): INT
+    foreign_key(student_id): INT
+    full_attendance: JSON
+}
+
+table(Configuracion) {
+    primary_key(id): INT
+    --
+    name: VARCHAR
+    value: VARCHAR
+}
+
+' Relaciones
+Usuario "1" -- "n" Asistencia : registra >
+Usuario "1" -- "n" Asistencia : tiene >
+Curso "1" -- "n" Asistencia : contiene >
+Curso "1" -- "n" AsistenciaPermanente : tiene >
+Usuario "1" -- "n" AsistenciaPermanente : pertenece >
+
+' Notas explicativas
+note bottom of Asistencia
+  attendance puede ser:
+  -1: Suspendido
+  0: Inasistencia
+  1: Asistió
+  2: Llegada tarde
+  3: Excusa médica
+  -8: No aplica
+end note
+
+note right of AsistenciaPermanente
+  full_attendance almacena
+  el historial completo
+  de asistencias en
+  formato JSON
+end note
+
+note right of Configuracion
+  Almacena parámetros
+  de configuración del
+  sistema y conexión
+  a BD externa
+end note
+
+@enduml 
