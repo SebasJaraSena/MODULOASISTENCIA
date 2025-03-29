@@ -91,12 +91,11 @@ function studentsFormatWeek($studentslist, $week, $cachehistoryattendance, $temp
            
         }
         
-        $jsonattendance = json_decode($cachehistoryattendance[array_key_first($filtered)]['full_attendance'], true)??[];
+       // $jsonattendance = json_decode($cachehistoryattendance[array_key_first($filtered)]['full_attendance'], true)??[];
         
-        
-        $filtereddate = array_filter($jsonattendance, function ($item) use ($initial, $final, $userid){
-            return  $initial <= $item['DATE'] && $final >= $item['DATE'] && $item['TEACHER_ID'] == $userid;
-        });
+        //$filtereddate = array_filter($jsonattendance, function ($item) use ($initial, $final, $userid){
+        //    return  $initial <= $item['DATE'] && $final >= $item['DATE'] && $item['TEACHER_ID'] == $userid;
+       // });
         
         $lastrec = array_key_last($filtereddate);
         $startindex = array_key_first($filtereddate)??0;
@@ -276,8 +275,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){ // Processing POST requestes
             
             $toloadcache = $DB->get_records('local_asistencia_permanente', ['course_id'=>$courseid]);
         }
-    //    $DB->delete_records('local_asistencia', ['courseid' => $courseid]);
-      //  redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
+        $DB->delete_records('local_asistencia', ['courseid' => $courseid]);
+        redirect($CFG->wwwroot.'/course/view.php?id='.$courseid);
     }
 }
 $pageurl = $attendancepage-1??0;
