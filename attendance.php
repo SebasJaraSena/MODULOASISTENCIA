@@ -237,7 +237,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){ // Processing POST requestes
                     $insert_update->course_id = $asis->courseid;
                     $insert_update->student_id = $asis->studentid;
                     $insert_update->full_attendance = json_encode($attendance_format);
-                    $DB->insert_record('local_asistencia_permanente', $insert_update);
+                   // $DB->insert_record('local_asistencia_permanente', $insert_update);
                 } else{
                     
                     $attandancehistory = json_decode($result->full_attendance, true);
@@ -249,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){ // Processing POST requestes
                         $attandancehistory[$lastattendancerecordindex] = $attendance_format[0];
                         $result->full_attendance= json_encode($attandancehistory);
                         
-                        $DB->update_record('local_asistencia_permanente', $result);
+                        //$DB->update_record('local_asistencia_permanente', $result);
                     }
                     
                     $todeletecounter++;
